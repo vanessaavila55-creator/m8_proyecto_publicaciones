@@ -1,0 +1,77 @@
+<div id="nueva-publicacion-view">
+
+    <header class="py-3">
+        <h1 class="text-center">Crea una nueva publicación</h1>
+    </header>
+
+    <main class="container">
+
+        <section>
+            <div class="row justify-content-center">
+                <div class="col-12 col-sm-6 col-lg-4">
+                    <form id="form-publicacion">
+                        <div class="mb-3">
+                            <label for="publicacion-titulo" class="form-label">Titulo:</label>
+                            <input type="text" class="form-control" id="publicacion-titulo" name="titulo" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="publicacion-contenido" class="form-label">Contenido:</label>
+                            <textarea name="contenido" id="publicacion-contenido" class="form-control" required></textarea>
+                        </div>
+                        <div>
+                            <button type="submit" class="btn btn-primary">Publicar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+</div>
+
+<script>
+
+    const token = localStorage.getItem("blog_token");
+
+    if(!token){
+        alert("Usted aún no inicia sesión.");
+        location.href = "/login";
+    }
+    
+    const formPublicacion = document.getElementById("form-publicacion");
+
+    if(formPublicacion){
+
+        formPublicacion.addEventListener("submit", async (event) => {
+            
+
+            try {
+                event.preventDefault();
+
+                const headers = new Headers();
+                headers.append("Authorization", `Bearer ${token}`);
+
+                const formData = new FormData(formPublicacion);
+
+                const response = await fetch("/api/publicaciones", {
+                    method: "POST",
+                    body: formData,
+                    headers
+                });
+
+                const data = await response.json();
+
+                alert(data.message);
+
+                if(response.status == 201){
+                    location.href = "/publicacion/"+ data.publicacion.id;
+                }
+
+            } catch (error) {
+                console.log(error);
+                alert(error.message);
+            }
+        });
+    }
+</script>

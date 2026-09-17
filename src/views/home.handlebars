@@ -1,0 +1,40 @@
+<div id="home-view">
+
+    <header class="py-3">
+        <h1 class="text-center">Blog M8</h1>
+    </header>
+
+    <main class="container">
+
+        <section>
+            {{> statsCard titulo="Total Publicaciones" cantidad=cantidadPublicaciones}}
+        </section>
+
+        <section>
+            <h2 class="text-center">Publicaciones</h2>
+
+            <div class="d-flex justify-content-end" id="link-nueva-publicacion">
+                <a class="btn btn-primary"  href="/nueva-publicacion">Nueva publicación</a>
+            </div>
+
+            <div class="row py-3 g-3">
+
+                {{#each publicaciones }}
+                <div class="col-12 col-sm-6">
+                    <div class="card">
+                        <h5 class="card-header">Autor: {{autor.nombre}} </h5>
+                        <div class="card-body">
+                            <h5 class="card-title">{{titulo}}</h5>
+                            <p class="card-text">Fecha creación: {{fechaCreacion}}</p>
+                            <p class="card-text">{{contenido}}</p>
+                            <a href="/publicacion/{{id}}" class="btn btn-primary">Ver más</a>
+                        </div>
+                    </div>
+                </div>
+                {{/each}}
+            </div>
+        </section>
+
+    </main>
+
+</div>

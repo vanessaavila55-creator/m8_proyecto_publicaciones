@@ -1,0 +1,84 @@
+<div id="registro-view">
+
+    <header class="py-3">
+        <h1 class="text-center">Crea una cuenta en nuestro blog.</h1>
+    </header>
+
+    <main class="container">
+
+        <section>
+            <div class="row justify-content-center">
+                <div class="col-12 col-sm-6 col-lg-4">
+                    <form id="form-registro">
+                        <div class="mb-3">
+                            <label for="registro-nombre" class="form-label">Nombre:</label>
+                            <input type="text" class="form-control" id="registro-nombre" name="nombre" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="registro-email" class="form-label">Email:</label>
+                            <input type="email" class="form-control" id="registro-email" name="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="registro-password" class="form-label">Password:</label>
+                            <input type="password" class="form-control" id="registro-password" name="password" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="registro-reply-password" class="form-label">Reply-Password:</label>
+                            <input type="password" class="form-control" id="registro-reply-password" name="reply-password" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="registro-avatar" class="form-label">Avatar:</label>
+                            <input type="file" class="form-control" id="registro-avatar" name="avatar">
+                        </div>
+                        <div>
+                            <button type="submit" class="btn btn-primary">Iniciar sesión</button>
+                            <button type="reset" class="btn btn-secondary">Limpiar campos</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+</div>
+
+<script>
+    
+    const formRegistro = document.getElementById("form-registro");
+
+    if(formRegistro){
+
+        formRegistro.addEventListener("submit", async (event) => {
+            
+
+            try {
+                event.preventDefault();
+
+                const formData = new FormData(formRegistro);
+
+                if(formData.get("password") != formData.get("reply-password")){
+                    alert("Password y reply password no coinciden, verifique estos campos.");
+                    return;
+                }
+
+                const response = await fetch("/auth/registro", {
+                    method: "POST",
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                alert(data.message);
+
+                if(response.status == 201){
+                    location.href = "/login";
+                }
+
+            } catch (error) {
+                console.log(error);
+                alert(error.message);
+            }
+        });
+    }
+</script>

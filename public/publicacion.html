@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Publicación | Trazos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/assets/styles.css" />
+</head>
+
+<body>
+    <div id="site-nav"></div>
+    <main class="container page-section">
+        <div id="message" class="alert d-none"></div>
+        <article id="article"></article>
+        <section class="mt-5 pt-4 border-top">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="h3 mb-0">Comentarios</h2>
+                <span id="comment-count" class="meta"></span>
+            </div>
+            <div id="comment-form-wrap"></div>
+            <div id="comments"></div>
+        </section>
+    </main>
+    <script src="/assets/app.js"></script>
+    <script>
+        renderNav();
+        const id = new URLSearchParams(location.search).get("id"),
+            article = document.querySelector("#article"),
+            comments = document.querySelector("#comments"),
+            formWrap = document.querySelector("#comment-form-wrap"),
+            message = document.querySelector("#message"),
+            current = getUser();
+        const load = async () => {
+            if (!id) {
+                showMessage(message, "No se indicó una publicación.");
+                return;
+            }
+            try {
+                const data = await api(
+                    `/api/publicaciones/${encodeURIComponent(id)}`,
+                ),
+                    post = data.publicacion;
+                document.title = `${post.titulo} | Trazos`;
+                article.innerHTML = `<p class="eyebrow accent">${escapeHtml(post.autor?.nombre || "Autor desconocido")} · ${formatDate(post.fecha_creacion || post.createdAt)}</p><h1 class="display-4 fw-bold mt-3">${escapeHtml(post.titulo)}</h1><div class="article-body mt-4">${escapeHtml(post.contenido)}</div>`;
+                const list = post.comentarios || [];
+                const defaultAvatar = "/assets/img/default-avatar.png";
+                document.querySelector("#comment-count").textContent =
+                    `${list.length} comentario${list.length === 1 ? "" : "s"}`;
+                comments.innerHTML = list.length
+                    ? list
+                        .map((comment) => {
+                            const canDelete =
+                                current &&
+                                (current.admin ||
+                                    Number(current.id) ===
+                                    Number(comment.autor?.id) ||
+                                    Number(current.id) ===
+                                    Number(post.autor?.id));
+                            const avatarUrl = comment.autor?.id
+                                ? `/api/usuarios/${comment.autor.id}/avatar`
+                                : defaultAvatar;
+                            return `<div class="comment d-flex gap-3"><img class="comment-avatar rounded-circle border" src="${avatarUrl}" alt="Avatar de ${escapeHtml(comment.autor?.nombre || "Usuario")}" onerror="this.onerror=null; this.src='${defaultAvatar}'"><div class="flex-grow-1"><div class="d-flex justify-content-between gap-3"><div><strong>${escapeHtml(comment.autor?.nombre || "Usuario")}</strong><span class="meta ms-2">${formatDate(comment.fecha_creacion || comment.createdAt)}</span></div>${canDelete ? `<button class="btn btn-sm btn-outline-danger delete-comment" data-id="${comment.id}" title="Eliminar comentario"><i class="bi bi-trash"></i></button>` : ""}</div><p class="mb-0 mt-2">${escapeHtml(comment.contenido)}</p></div></div>`;
+                        })
+                        .join("")
+                    : `<p class="meta">Todavía no hay comentarios.</p>`;
+                document
+                    .querySelectorAll(".delete-comment")
+                    .forEach((button) =>
+                        button.addEventListener("click", async () => {
+                            if (!confirm("¿Eliminar este comentario?"))
+                                return;
+                            try {
+                                await api(
+                                    `/api/comentarios/${button.dataset.id}`,
+                                    { method: "DELETE" },
+                                );
+                                load();
+                            } catch (error) {
+                                showMessage(message, error.message);
+                            }
+                        }),
+                    );
+                if (current)
+                    formWrap.innerHTML = `<form id="comment-form" class="mb-4"><label class="form-label fw-bold" for="comment">Deja tu comentario</label><textarea class="form-control" id="comment" rows="3" required maxlength="2000"></textarea><button class="btn btn-accent mt-3" type="submit"><i class="bi bi-send me-1"></i>Comentar</button></form>`;
+                else
+                    formWrap.innerHTML = `<div class="alert alert-light border">Inicia sesión para participar en la conversación. <a href="/login.html">Ingresar</a></div>`;
+                document
+                    .querySelector("#comment-form")
+                    ?.addEventListener("submit", async (event) => {
+                        event.preventDefault();
+                        try {
+                            await api("/api/comentarios", {
+                                method: "POST",
+                                body: JSON.stringify({
+                                    publicacionId: Number(id),
+                                    contenido: document
+                                        .querySelector("#comment")
+                                        .value.trim(),
+                                }),
+                            });
+                            load();
+                        } catch (error) {
+                            showMessage(message, error.message);
+                        }
+                    });
+            } catch (error) {
+                showMessage(message, error.message);
+            }
+        };
+        load();
+    </script>
+</body>
+
+</html>

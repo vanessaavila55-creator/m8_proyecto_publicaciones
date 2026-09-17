@@ -1,0 +1,58 @@
+<main class="container py-4">
+    {{#if error}}
+    <div class="alert alert-danger" role="alert">
+        {{error}}
+        <a href="/" class="alert-link ms-2">Volver al inicio</a>
+    </div>
+    {{else}}
+    <article class="card shadow-sm border-0">
+        <div class="card-body p-4 p-md-5">
+            <div class="d-flex justify-content-between align-items-start gap-3 mb-4">
+                <div>
+                    <span class="badge text-bg-primary mb-3">Publicación</span>
+                    <h1 class="display-6 fw-bold mb-3">{{publicacion.titulo}}</h1>
+                    <p class="text-body-secondary mb-0">
+                        Por <strong>{{publicacion.autor.nombre}}</strong>
+                        <span class="mx-1">·</span>
+                        {{publicacion.fechaCreacion}}
+                    </p>
+                </div>
+                <a href="/" class="btn btn-outline-secondary flex-shrink-0">Volver</a>
+            </div>
+
+            <div class="border-top pt-4 fs-5" style="white-space: pre-line;">
+                {{publicacion.contenido}}
+            </div>
+
+            <p class="small text-body-secondary mt-4 mb-0">
+                Última actualización: {{publicacion.fechaActualizacion}}
+            </p>
+        </div>
+    </article>
+
+    <section class="mt-5" aria-labelledby="comentarios-titulo">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 id="comentarios-titulo" class="h3 mb-0">Comentarios</h2>
+            <span class="badge rounded-pill text-bg-secondary">{{publicacion.comentarios.length}}</span>
+        </div>
+
+        {{#if publicacion.comentarios.length}}
+            {{#each publicacion.comentarios}}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between gap-3 mb-2">
+                        <strong>{{autor.nombre}}</strong>
+                        <small class="text-body-secondary">{{fechaCreacion}}</small>
+                    </div>
+                    <p class="mb-0" style="white-space: pre-line;">{{contenido}}</p>
+                </div>
+            </div>
+            {{/each}}
+        {{else}}
+        <div class="alert alert-light border" role="status">
+            Todavía no hay comentarios en esta publicación.
+        </div>
+        {{/if}}
+    </section>
+    {{/if}}
+</main>

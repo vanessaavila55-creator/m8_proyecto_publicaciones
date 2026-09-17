@@ -1,0 +1,47 @@
+<nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top">
+    <div class="container">
+        <a class="navbar-brand" href="/">Blog M8</a>
+        <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarNavAltMarkup"
+            aria-controls="navbarNavAltMarkup"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+        >
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/">Inicio</a>
+                <a class="nav-link" href="/login" id="link-login">Login</a>
+                <a class="nav-link" href="/registro" id="link-registro">Registro</a>
+                <a class="nav-link d-none" href="" id="link-salir">Salir</a>
+
+            </div>
+        </div>
+    </div>
+</nav>
+
+<script>
+
+    const linkLogin = document.getElementById("link-login");
+    const linkRegistro = document.getElementById("link-registro");
+    const linkSalir = document.getElementById("link-salir");
+
+    if(localStorage.getItem("blog_token")){
+        linkLogin.classList.add("d-none");
+        linkRegistro.classList.add("d-none");
+        linkSalir.classList.remove("d-none");
+    }
+
+    if(linkSalir){
+        linkSalir.addEventListener("click", (event) => {
+            event.preventDefault();
+            localStorage.clear();
+            location.href = "/";
+        })
+    }
+
+</script>

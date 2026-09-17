@@ -1,0 +1,71 @@
+<div id="login-view">
+
+    <header class="py-3">
+        <h1 class="text-center">Inicia sesión</h1>
+    </header>
+
+    <main class="container">
+
+        <section>
+            <div class="row justify-content-center">
+                <div class="col-12 col-sm-6 col-lg-4">
+                    <form id="form-login">
+                        <div class="mb-3">
+                            <label for="login-email" class="form-label">Email:</label>
+                            <input type="email" class="form-control" id="login-email" name="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="login-password" class="form-label">Password:</label>
+                            <input type="password" class="form-control" id="login-password" name="password" required>
+                        </div>
+                        <div>
+                            <button type="submit" class="btn btn-primary">Iniciar sesión</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+</div>
+
+
+<script>
+
+
+    const formLogin = document.getElementById("form-login");
+
+    if (formLogin) {
+
+        formLogin.addEventListener("submit", async (event) => {
+
+            try {
+                event.preventDefault();
+
+                const formData = new FormData(formLogin);
+
+                const response = await fetch("/auth/login", {
+                    method: "POST",
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                alert(data.message);
+
+                if(response.status == 200){
+
+                    const token = data.token;
+                    localStorage.setItem("blog_token", token);
+                    location.href = "/";
+                }
+
+
+            } catch (error) {
+                alert(error.message);
+            }
+
+        })
+    }
+</script>

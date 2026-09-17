@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="es">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Crear cuenta | Trazos</title>
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+        />
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+            rel="stylesheet"
+        />
+        <link rel="stylesheet" href="/assets/styles.css" />
+    </head>
+
+    <body>
+        <div id="site-nav"></div>
+        <main class="auth-wrap">
+            <section class="auth-panel">
+                <p class="eyebrow accent">Únete a Trazos</p>
+                <h1 class="fw-bold mb-4">Crear cuenta</h1>
+                <div id="message" class="alert d-none"></div>
+                <form id="register-form" enctype="multipart/form-data">
+                    <label class="form-label fw-bold" for="name">Nombre</label
+                    ><input
+                        class="form-control mb-3"
+                        id="name"
+                        maxlength="100"
+                        autocomplete="name"
+                        required
+                    /><label class="form-label fw-bold" for="email"
+                        >Correo electrónico</label
+                    ><input
+                        class="form-control mb-3"
+                        type="email"
+                        id="email"
+                        autocomplete="email"
+                        required
+                    /><label class="form-label fw-bold" for="password"
+                        >Contraseña</label
+                    >
+                    <div class="input-group mb-3">
+                        <input
+                            class="form-control"
+                            type="password"
+                            id="password"
+                            minlength="6"
+                            autocomplete="new-password"
+                            required
+                        /><button
+                            class="btn btn-outline-secondary"
+                            type="button"
+                            data-toggle-password="#password"
+                            aria-label="Mostrar contraseña"
+                        >
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </div>
+                    <label class="form-label fw-bold" for="reply-password"
+                        >Repite la contraseña</label
+                    >
+                    <div class="input-group mb-3">
+                        <input
+                            class="form-control"
+                            type="password"
+                            id="reply-password"
+                            minlength="6"
+                            autocomplete="new-password"
+                            required
+                        /><button
+                            class="btn btn-outline-secondary"
+                            type="button"
+                            data-toggle-password="#reply-password"
+                            aria-label="Mostrar contraseña"
+                        >
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </div>
+                    <label class="form-label fw-bold" for="avatar"
+                        >Avatar
+                        <span class="meta">(opcional, máximo 2 MB)</span></label
+                    ><input
+                        class="form-control"
+                        type="file"
+                        id="avatar"
+                        accept="image/jpeg,image/jpg,image/webp,image/svg+xml"
+                    /><button class="btn btn-accent w-100 mt-4" type="submit">
+                        Crear mi cuenta
+                    </button>
+                </form>
+                <p class="meta mt-4 mb-0">
+                    ¿Ya tienes cuenta? <a href="/login.html">Ingresa</a>
+                </p>
+            </section>
+        </main>
+        <script src="/assets/app.js"></script>
+        <script>
+            renderNav();
+            document
+                .querySelectorAll("[data-toggle-password]")
+                .forEach((button) =>
+                    button.addEventListener("click", (event) => {
+                        const input = document.querySelector(
+                                event.currentTarget.dataset.togglePassword,
+                            ),
+                            icon = event.currentTarget.querySelector("i");
+                        input.type =
+                            input.type === "password" ? "text" : "password";
+                        icon.className =
+                            input.type === "password"
+                                ? "bi bi-eye"
+                                : "bi bi-eye-slash";
+                    }),
+                );
+            document
+                .querySelector("#register-form")
+                .addEventListener("submit", async (event) => {
+                    event.preventDefault();
+                    const message = document.querySelector("#message"),
+                        password = document.querySelector("#password").value,
+                        reply = document.querySelector("#reply-password").value,
+                        button = event.target.querySelector(
+                            "button[type=submit]",
+                        );
+                    if (password !== reply) {
+                        showMessage(message, "Las contraseñas no coinciden.");
+                        return;
+                    }
+                    const form = new FormData();
+                    form.append(
+                        "nombre",
+                        document.querySelector("#name").value.trim(),
+                    );
+                    form.append(
+                        "email",
+                        document.querySelector("#email").value.trim(),
+                    );
+                    form.append("password", password);
+                    if (document.querySelector("#avatar").files[0])
+                        form.append(
+                            "avatar",
+                            document.querySelector("#avatar").files[0],
+                        );
+                    button.disabled = true;
+                    try {
+                        await api("/auth/registro", {
+                            method: "POST",
+                            body: form,
+                        });
+                        location.href = "/login.html?registered=1";
+                    } catch (error) {
+                        showMessage(message, error.message);
+                        button.disabled = false;
+                    }
+                });
+        </script>
+    </body>
+</html>
