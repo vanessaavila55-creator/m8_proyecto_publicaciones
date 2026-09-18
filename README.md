@@ -184,3 +184,13 @@ Cuando los archivos estén disponibles, puedes mostrarlos directamente usando es
 - Los avatares aceptan imágenes JPEG, JPG, WEBP o SVG de hasta 2 MB.
 - La aplicación utiliza el puerto `3000` directamente en [server.js](server.js).
 - `node_modules` y `.env.development` están excluidos del control de versiones.
+
+## Repositorio
+
+**Repositorio Git:** https://github.com/vanessaavila55-creator/m8_proyecto_publicaciones.git
+
+## Autor
+
+Lissette Avila
+
+Proyecto desarrollado como parte del **Módulo 8 - IMPLEMENTACIÓN DE API BACKEND NODE**.
